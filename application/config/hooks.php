@@ -11,9 +11,9 @@
 */
 
 $hook['post_controller_constructor'] = array(
-	'class'    => 'Hooks_pre_controller',
+	'class'    => 'Hooks_post_controller_constructor',
 	'function' => 'navigateur_check',
-	'filename' => 'hooks_pre_controller.php',
+	'filename' => 'hooks_post_controller_constructor.php',
 	'filepath' => 'hooks',
 );
 
