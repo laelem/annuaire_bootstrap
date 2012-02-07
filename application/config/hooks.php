@@ -10,7 +10,12 @@
 |
 */
 
-
+$hook['post_controller_constructor'] = array(
+	'class'    => 'Hooks_pre_controller',
+	'function' => 'navigateur_check',
+	'filename' => 'hooks_pre_controller.php',
+	'filepath' => 'hooks',
+);
 
 /* End of file hooks.php */
 /* Location: ./application/config/hooks.php */

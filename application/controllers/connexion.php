@@ -31,7 +31,7 @@ class Connexion extends CI_Controller
 	{
 		$this->connexion();
 	}
-
+	
 	public function connexion()
 	{
 		$this->form_validation->set_rules('login', $this->lang->line('form_libelle_champ_email'), "required|alpha_dash|xss_clean|callback_verif_compte");
