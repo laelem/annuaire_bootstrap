@@ -1,0 +1,1 @@
+<?phpecho 'Bienvenue sur l\'annuaire.';

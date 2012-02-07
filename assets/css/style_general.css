@@ -1,0 +1,180 @@
+
+html, body{
+	margin : 0;
+	padding : 0;
+	height : 100%;
+}
+
+#page{
+    font-family : Arial, sans-serif;
+	font-size : 12px;
+	height : 100%;
+}
+
+#col_gauche{
+	width : 219px;
+	padding : 0 30px;
+	position : absolute;
+}
+
+#main{
+	border-left : 280px solid #ddd;
+	padding : 0 20px 20px 20px;
+	min-height : 100%;
+}
+
+#header{
+	margin-bottom : 20px;
+}
+#header h2{
+	margin : 0;
+}
+#conteneur_connexion h2{
+	padding : 20px 0;
+	margin : 0;
+}
+#header table{
+	width : 100%;
+	padding : 20px 20px 0 20px;
+	border-bottom : 1px solid #000;
+}
+#header .date_heure{
+	text-align : right;
+	width : 300px;
+}
+#header .user{
+	text-align : right;
+}
+
+form, .fiche_contact{
+	background-color : #eee;
+	border : 1px solid #bbb;
+	padding : 10px;
+}
+
+#logo{
+	text-align : center;
+	padding : 20px 0 10px 0;
+	border-bottom : 1px solid #bbb; 
+}
+#logo img{
+	padding : 5px;
+	background-color : #fff;
+}
+
+form label, .fiche_contact td:first-child{
+	text-align : right;
+	display : block;
+}
+
+.fiche_contact td{
+	padding : 6px;
+}
+
+#menu h2, #menu p{
+	text-align : center;
+}
+
+a{
+	color : #000;
+}
+a:hover{
+	text-decoration : none;
+}
+
+.requis{
+	color : #cc0000;
+	font-size : 18px;
+}
+
+.clear{
+	clear : both;
+}
+
+.liste{
+	width : 100%;
+	border-collapse : collapse;
+}
+
+.liste th{
+	border : 1px solid #000;
+	background-color : #000;
+	color : #fff;
+	padding : 2px 4px;
+}
+
+.liste th a{
+	text-decoration : none;
+	color : #fff;
+}
+
+.liste th span{
+	font-weight : normal;
+	font-style : italic;
+}
+
+.liste td{
+	border : 1px solid #000;
+	padding : 2px 4px;
+}
+
+.liste .action{
+	background-color : #ddd;
+	text-align : center;
+}
+
+.erreurs_form{
+	border : 1px solid #990000;
+	padding : 6px;
+	margin-bottom : 10px;
+}
+
+.erreurs_form p{
+	margin : 2px;
+}
+
+.erreurs_form div{
+	margin : 5px 0 0 20px; 
+}
+
+textarea{
+	text-align : justify;
+}
+
+.pagination{
+	margin-top : 20px;
+	text-align : center;
+	font-size : 15px;
+}
+.pagination span{
+	border : 1px solid #000;
+	padding : 3px;
+	margin : 0 2px 0 8px;
+	background-color : #ddd;
+}
+.pagination a{
+	border : 1px solid #000;
+	padding : 3px;
+	margin : 0 2px;
+	text-decoration : none;
+}
+
+.filtres a{
+	padding : 2px;
+}
+.filtres a:hover{
+	text-decoration : none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

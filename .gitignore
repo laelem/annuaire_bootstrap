@@ -1,0 +1,18 @@
+#Fichiers inutiles de windows, mac et linux
+*.db
+.DS_Store
+*~
+
+#Fichiers IDE
+nbproject/*
+.settings/*
+.buildpath
+.project
+
+# fichiers pouvant contenir des configs
+.htaccess
+application/config/config.php
+application/config/database.php
+
+# dossier d'upload / de cache 
+upload
