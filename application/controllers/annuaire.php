@@ -40,6 +40,10 @@ class Annuaire extends CI_Controller
 		$this->load->helper(array('form', 'url'));
 		$this->load->library('table');
 		
+		// Ajout d'un script js pour des colonnes redimensionnables
+        $this->layout->ajouter_js('colResizable/colResizable-1.3.source.min');
+        $this->layout->ajouter_js('colResizable/start');
+		
 		$data['message'] = $message;
 		
 		$sess_annuaire = $this->init_liste($page);
@@ -184,11 +188,16 @@ class Annuaire extends CI_Controller
 		redirect('/annuaire/liste/'.$data_session['annuaire']['page']);
 	}
 	
-	public function ajouter()
-	{	
+	protected function init_form()
+	{
 		// chargement des librairies
 		$this->load->helper(array('form', 'url'));
 		$this->load->library('form_validation');
+		$this->layout->ajouter_js('design_check_radio/design_check_radio.min');
+		$this->layout->ajouter_css('design_check_radio/style');
+		$this->layout->ajouter_js('chosen/chosen/chosen.jquery.min');
+		$this->layout->ajouter_js('chosen/start');
+		$this->layout->ajouter_css('chosen/chosen/chosen');
 		
 		// règles de validation
 		$this->form_validation->set_rules('nom', 			$this->lang->line('annuaire_libelle_nom'), 			'required');
@@ -208,6 +217,52 @@ class Annuaire extends CI_Controller
 		);
 		$this->load->library('upload');
 		$this->upload->initialize($config_upload_image);
+		
+		// Récupération de la liste des pays via un fichier xml
+		$pays_xml = simplexml_load_file(APPPATH.'data/pays.xml');
+		$tab_pays = array(0 => '');
+		$i = 0;
+		while($pays_xml->country[$i]){
+			$tab_pays[] = $pays_xml->country[$i]->name_country_uppercase;
+			++$i;
+		}
+		setlocale(LC_ALL, "fr_FR.UTF-8");
+		sort($tab_pays, SORT_LOCALE_STRING);
+		
+		return $tab_pays;
+	}
+	
+	protected function recup_form()
+	{
+		$data['data_contact'] = array(
+			'actif' 			=> $this->input->post('actif', TRUE),
+			'civ' 				=> $this->input->post('civ', TRUE),
+			'nom' 				=> strtoupper($this->input->post('nom', TRUE)),
+			'prenom' 			=> ucwords($this->input->post('prenom', TRUE)),
+			'tel' 				=> $this->input->post('tel', TRUE),
+			'mobile' 			=> $this->input->post('mobile', TRUE),
+			'fax' 				=> $this->input->post('fax', TRUE),
+			'decideur' 			=> $this->input->post('decideur', TRUE),
+			'societe' 			=> strtoupper($this->input->post('societe', TRUE)),
+			'adresse' 			=> $this->input->post('adresse', TRUE),
+			'adresse2' 			=> $this->input->post('adresse2', TRUE),
+			'cp' 				=> $this->input->post('cp', TRUE),
+			'ville' 			=> ucwords($this->input->post('ville', TRUE)),
+			'pays' 				=> strtoupper($this->input->post('pays', TRUE)),
+			'web' 				=> $this->input->post('web', TRUE),
+			'email' 			=> $this->input->post('email', TRUE),
+			'com' 				=> $this->input->post('com', TRUE),
+			'date_maj' 			=> date_format(date_create(), 'Y-m-d H:i:s'),
+		);
+			
+		$data['data_fonctions'] = $this->input->post('fonctions', TRUE);
+		return $data;
+	}
+	
+	public function ajouter()
+	{	
+		// Initialisation du formulaire
+		$tab_pays = $this->init_form();
 		
 		// si on arrive sur le formulaire
 		// ou si il y a des erreurs générales 
@@ -240,6 +295,7 @@ class Annuaire extends CI_Controller
 				'com'				=> '',
 			);
 			
+			$data['tab_pays'] = $tab_pays;
 			$data['fonctions'] = $this->fonctions_model->get_fonctions_actives();
 			$data['erreur_upload_photo'] = $this->upload->display_errors();
 			$data['lien_photo'] = '';
@@ -272,34 +328,13 @@ class Annuaire extends CI_Controller
 				$this->image_lib->resize();
 			}
 			
-			// Reprise des valeurs
-			$data_contact = array(
-				'actif' 			=> $this->input->post('actif', TRUE),
-				'civ' 				=> $this->input->post('civ', TRUE),
-				'nom' 				=> strtoupper($this->input->post('nom', TRUE)),
-				'prenom' 			=> ucwords($this->input->post('prenom', TRUE)),
-				'tel' 				=> $this->input->post('tel', TRUE),
-				'mobile' 			=> $this->input->post('mobile', TRUE),
-				'fax' 				=> $this->input->post('fax', TRUE),
-				'decideur' 			=> $this->input->post('decideur', TRUE),
-				'societe' 			=> strtoupper($this->input->post('societe', TRUE)),
-				'adresse' 			=> $this->input->post('adresse', TRUE),
-				'adresse2' 			=> $this->input->post('adresse2', TRUE),
-				'cp' 				=> $this->input->post('cp', TRUE),
-				'ville' 			=> ucwords($this->input->post('ville', TRUE)),
-				'pays' 				=> strtoupper($this->input->post('pays', TRUE)),
-				'web' 				=> $this->input->post('web', TRUE),
-				'email' 			=> $this->input->post('email', TRUE),
-				'photo' 			=> $data_photo['file_name'],
-				'com' 				=> $this->input->post('com', TRUE),
-				'date_maj' 			=> date_format(date_create(), 'Y-m-d H:i:s'),
-			);
-			
-			$data_fonctions = $this->input->post('fonctions', TRUE);
+			$data = $this->recup_form();
+			$data['tab_pays'] = $tab_pays;
+			$data['data_contact']['photo'] = $data_photo['file_name'];
 			
 			// traitement
-			$contact_id = $this->annuaire_model->ajouter_contact($data_contact);
-			$this->annuaire_model->ajouter_fonctions_contact($contact_id, $data_fonctions);
+			$contact_id = $this->annuaire_model->ajouter_contact($data['data_contact']);
+			$this->annuaire_model->ajouter_fonctions_contact($contact_id, $data['data_fonctions']);
 			
 			// Redirection vers la liste à la page mise en session
 			$sess_annuaire = $this->session->userdata('annuaire');
@@ -309,28 +344,8 @@ class Annuaire extends CI_Controller
 	
 	public function modifier($id)
 	{
-		// chargement des librairies
-		$this->load->helper(array('form', 'url'));
-		$this->load->library('form_validation');
-		
-		// règles de validation
-		$this->form_validation->set_rules('nom', 			$this->lang->line('annuaire_libelle_nom'), 			'required');
-		$this->form_validation->set_rules('prenom', 		$this->lang->line('annuaire_libelle_prenom'), 		'required');
-		$this->form_validation->set_rules('societe', 		$this->lang->line('annuaire_libelle_societe'), 		'required');
-		$this->form_validation->set_rules('fonctions', 		$this->lang->line('annuaire_libelle_fonctions'), 	'required');
-		$this->form_validation->set_rules('cp', 			$this->lang->line('users_libelle_cp'), 				'numeric|exact_length[5]');
-		$this->form_validation->set_rules('email', 			$this->lang->line('users_libelle_email'), 			'valid_email');
-
-		// règles pour l'upload
-		$config_upload_image = array(
-			'upload_path' 		=> './upload/user_photo/',
-			'allowed_types' 	=> 'gif|jpg|png',
-			'max_size'			=> '1000', // Ko
-			'max_width'  		=> '1024', // pixels
-			'max_height'  		=> '768',
-		);
-		$this->load->library('upload');
-		$this->upload->initialize($config_upload_image);
+		// Initialisation du formulaire
+		$tab_pays = $this->init_form();
 
 		// si on arrive sur le formulaire
 		// ou si il y a des erreurs générales 
@@ -345,6 +360,7 @@ class Annuaire extends CI_Controller
 			$data['contact'] = $this->annuaire_model->get_contact($id);
 			$data['contact']['fonctions'] = $this->fonctions_model->get_fonctions_contact($id);
 			$data['fonctions'] = $this->fonctions_model->get_fonctions_actives();
+			$data['tab_pays'] = $tab_pays;
 			
 			// gestion de l'affichage de l'upload
 			$data['erreur_upload_photo'] = $this->upload->display_errors();
@@ -391,34 +407,14 @@ class Annuaire extends CI_Controller
 				$this->image_lib->resize();
 			}
 
-			// récupération des valeurs
-			$data_contact = array(
-				'actif' 			=> $this->input->post('actif', TRUE),
-				'civ' 				=> $this->input->post('civ', TRUE),
-				'nom' 				=> strtoupper($this->input->post('nom', TRUE)),
-				'prenom' 			=> ucwords($this->input->post('prenom', TRUE)),
-				'tel' 				=> $this->input->post('tel', TRUE),
-				'mobile' 			=> $this->input->post('mobile', TRUE),
-				'fax' 				=> $this->input->post('fax', TRUE),
-				'decideur' 			=> $this->input->post('decideur', TRUE),
-				'societe' 			=> strtoupper($this->input->post('societe', TRUE)),
-				'adresse' 			=> $this->input->post('adresse', TRUE),
-				'adresse2' 			=> $this->input->post('adresse2', TRUE),
-				'cp' 				=> $this->input->post('cp', TRUE),
-				'ville' 			=> ucwords($this->input->post('ville', TRUE)),
-				'pays' 				=> strtoupper($this->input->post('pays', TRUE)),
-				'web' 				=> $this->input->post('web', TRUE),
-				'email' 			=> $this->input->post('email', TRUE),
-				'photo' 			=> $data_photo['file_name'],
-				'com' 				=> $this->input->post('com', TRUE),
-				'date_maj' 			=> date_format(date_create(), 'Y-m-d H:i:s'),
-			);
-			$data_fonctions = $this->input->post('fonctions', TRUE);
+			$data = $this->recup_form();
+			$data['data_contact']['photo'] = $data_photo['file_name'];
+			$data['tab_pays'] = $tab_pays;
 			
 			// traitement
 			$this->annuaire_model->supprimer_fonctions_contact($id);
-			$this->annuaire_model->modifier_contact($data_contact, $id);
-			$this->annuaire_model->ajouter_fonctions_contact($id, $data_fonctions);
+			$this->annuaire_model->modifier_contact($data['data_contact'], $id);
+			$this->annuaire_model->ajouter_fonctions_contact($id, $data['data_fonctions']);
 			
 			// Redirection vers la liste à la page mise en session
 			$sess_annuaire = $this->session->userdata('annuaire');

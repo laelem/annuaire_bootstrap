@@ -30,6 +30,10 @@ class Fonctions extends CI_Controller
 
 	public function liste($message = '')
 	{
+		// Ajout d'un script js pour des colonnes redimensionnables
+        $this->layout->ajouter_js('colResizable/colResizable-1.3.source.min');
+        $this->layout->ajouter_js('colResizable/start');
+		
 		$sess_fonction = $this->session->userdata('fonction');
 		if(empty($sess_fonction) || empty($sess_fonction['tri'])){
 			$sess_fonction['tri'] = array(
@@ -58,14 +62,22 @@ class Fonctions extends CI_Controller
 		redirect('/fonctions/liste');
 	}
 	
-	public function ajouter()
+	protected function init_form()
 	{
 		$this->load->helper(array('form', 'url'));
 		$this->load->library('form_validation');
+		$this->layout->ajouter_js('design_check_radio/design_check_radio.min');
+		$this->layout->ajouter_css('design_check_radio/style');
 		
 		$this->form_validation->set_rules('actif', $this->lang->line('fonctions_libelle_actif'), 'required');
 		$this->form_validation->set_rules('nom', $this->lang->line('fonctions_libelle_nom'), 'required');
-
+	}
+	
+	public function ajouter()
+	{
+		// Initialisation du formulaire
+		$this->init_form();
+		
 		if ($this->form_validation->run() == FALSE)
 		{
 			$this->load->library('table');
@@ -86,11 +98,8 @@ class Fonctions extends CI_Controller
 	
 	public function modifier($id)
 	{
-		$this->load->helper(array('form', 'url'));
-		$this->load->library('form_validation');
-		
-		$this->form_validation->set_rules('actif', $this->lang->line('fonctions_libelle_actif'), 'required');
-		$this->form_validation->set_rules('nom', $this->lang->line('fonctions_libelle_nom'), 'required');
+		// Initialisation du formulaire
+		$this->init_form();
 
 		if ($this->form_validation->run() == FALSE)
 		{

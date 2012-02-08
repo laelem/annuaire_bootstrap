@@ -1,0 +1,9 @@
+
+.has-js .label_check,
+.has-js .label_radio { padding: 0 10px 0 15px; display: inline; cursor:pointer;}
+.has-js .label_radio { background: url(images/radio-off.png) no-repeat; }
+.has-js .label_check { background: url(images/check-off.png) no-repeat; }
+.has-js label.c_on { background: url(images/check-on.png) no-repeat; }
+.has-js label.r_on { background: url(images/radio-on.png) no-repeat; }
+.has-js .label_check input,
+.has-js .label_radio input { position: absolute; left: -9999px; }

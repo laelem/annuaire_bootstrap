@@ -96,20 +96,32 @@ class Layout
 */
 	public function ajouter_css($nom)
 	{
-		if(is_string($nom) AND !empty($nom) AND file_exists('./assets/css/' . $nom . '.css'))
+		if(is_string($nom) AND !empty($nom))
 		{
-			$this->var['css'][] = base_url().'assets/css/'.$nom.'.css';
-			return true;
+			if(file_exists('./assets/css/' . $nom . '.css')){
+				$this->var['css'][] = base_url().'assets/css/'.$nom.'.css';
+				return true;
+			}
+			elseif(file_exists('./assets/plugins/' . $nom . '.css')){
+				$this->var['css'][] = base_url().'assets/plugins/'.$nom.'.css';
+				return true;
+			}
 		}
 		return false;
 	}
 
 	public function ajouter_js($nom)
 	{
-		if(is_string($nom) AND !empty($nom) AND file_exists('./assets/javascript/' . $nom . '.js'))
+		if(is_string($nom) AND !empty($nom))
 		{
-			$this->var['js'][] = base_url().'assets/javascript/'.$nom.'.css';
-			return true;
+			if(file_exists('./assets/javascript/' . $nom . '.js')){
+				$this->var['js'][] = base_url().'assets/javascript/'.$nom.'.js';
+				return true;
+			}
+			elseif(file_exists('./assets/plugins/' . $nom . '.js')){
+				$this->var['js'][] = base_url().'assets/plugins/'.$nom.'.js';
+				return true;
+			}
 		}
 		return false;
 	}

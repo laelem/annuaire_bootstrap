@@ -30,6 +30,10 @@ class Users extends CI_Controller
 
 	public function liste($message = '')
 	{
+		// Ajout d'un script js pour des colonnes redimensionnables
+        $this->layout->ajouter_js('colResizable/colResizable-1.3.source.min');
+        $this->layout->ajouter_js('colResizable/start');
+		
 		$sess_user = $this->session->userdata('user');
 		if(empty($sess_user) || empty($sess_user['tri'])){
 			$sess_user['tri'] = array(
@@ -58,12 +62,13 @@ class Users extends CI_Controller
 		redirect('/users/liste');
 	}
 	
-	public function ajouter()
-	{	
+	protected function init_form()
+	{
 		$this->load->helper(array('form', 'url'));
 		$this->load->library('form_validation');
+		$this->layout->ajouter_js('design_check_radio/design_check_radio.min');
+		$this->layout->ajouter_css('design_check_radio/style');
 		
-		$this->form_validation->set_rules('login', 			$this->lang->line('users_libelle_login'), 			'required|alpha_dash|is_unique[user.login]');
 		$this->form_validation->set_rules('password', 		$this->lang->line('users_libelle_password'), 		'required|alpha_dash');
 		$this->form_validation->set_rules('nom', 			$this->lang->line('users_libelle_nom'), 			'required');
 		$this->form_validation->set_rules('date_naissance',	$this->lang->line('users_libelle_date_naissance'), 	'callback_date_check');
@@ -72,8 +77,45 @@ class Users extends CI_Controller
 		$this->form_validation->set_rules('ville', 			$this->lang->line('users_libelle_ville'), 			'required');
 		$this->form_validation->set_rules('pays', 			$this->lang->line('users_libelle_pays'), 			'required');
 		$this->form_validation->set_rules('tel', 			$this->lang->line('users_libelle_tel'), 			'required');
+	}
+	
+	protected function recup_form()
+	{
+		$date_naissance = $this->input->post('date_naissance', TRUE);
+		if(!empty($date_naissance))
+			$date_naissance = implode('-', array_reverse(explode('-', $date_naissance)));
+		else
+			$date_naissance = NULL;
+		
+		$data = array(
+			'actif' 			=> $this->input->post('actif', TRUE),
+			'civ' 				=> $this->input->post('civ', TRUE),
+			'login' 			=> $this->input->post('login', TRUE),
+			'password' 			=> $this->input->post('password', TRUE),
+			'statut' 			=> $this->input->post('statut', TRUE),
+			'nom' 				=> strtoupper($this->input->post('nom', TRUE)),
+			'prenom' 			=> ucwords($this->input->post('prenom', TRUE)),
+			'date_naissance' 	=> $date_naissance,
+			'adresse' 			=> $this->input->post('adresse', TRUE),
+			'adresse2' 			=> $this->input->post('adresse2', TRUE),
+			'cp' 				=> $this->input->post('cp', TRUE),
+			'ville' 			=> ucwords($this->input->post('ville', TRUE)),
+			'pays' 				=> strtoupper($this->input->post('pays', TRUE)),
+			'tel' 				=> $this->input->post('tel', TRUE),
+			'tel2' 				=> $this->input->post('tel2', TRUE),
+			'email' 			=> $this->input->post('email', TRUE),
+		);
+		return $data;
+	}
+	
+	public function ajouter()
+	{	
+		// Initialisation du formulaire
+		$this->init_form();
+		// Cas particuliers
+		$this->form_validation->set_rules('login', 			$this->lang->line('users_libelle_login'), 			'required|alpha_dash|is_unique[user.login]');
 		$this->form_validation->set_rules('email', 			$this->lang->line('users_libelle_email'), 			'required|valid_email|is_unique[user.email]');
-
+		
 		if ($this->form_validation->run() == FALSE)
 		{
 			$this->load->library('table');
@@ -99,30 +141,7 @@ class Users extends CI_Controller
 		}
 		else
 		{
-			$date_naissance = $this->input->post('date_naissance', TRUE);
-			if(!empty($date_naissance))
-				$date_naissance = implode('-', array_reverse(explode('-', $date_naissance)));
-			else
-				$date_naissance = NULL;
-			
-			$data = array(
-				'actif' 			=> $this->input->post('actif', TRUE),
-				'civ' 				=> $this->input->post('civ', TRUE),
-				'login' 			=> $this->input->post('login', TRUE),
-				'password' 			=> $this->input->post('password', TRUE),
-				'statut' 			=> $this->input->post('statut', TRUE),
-				'nom' 				=> strtoupper($this->input->post('nom', TRUE)),
-				'prenom' 			=> ucwords($this->input->post('prenom', TRUE)),
-				'date_naissance' 	=> $date_naissance,
-				'adresse' 			=> $this->input->post('adresse', TRUE),
-				'adresse2' 			=> $this->input->post('adresse2', TRUE),
-				'cp' 				=> $this->input->post('cp', TRUE),
-				'ville' 			=> ucwords($this->input->post('ville', TRUE)),
-				'pays' 				=> strtoupper($this->input->post('pays', TRUE)),
-				'tel' 				=> $this->input->post('tel', TRUE),
-				'tel2' 				=> $this->input->post('tel2', TRUE),
-				'email' 			=> $this->input->post('email', TRUE),
-			);
+			$data = $this->recup_form();
 			$this->users_model->ajouter_user($data);
 			redirect('/users/liste/users_message_ajouter');
 		}
@@ -130,20 +149,12 @@ class Users extends CI_Controller
 	
 	public function modifier($id)
 	{
-		$this->load->helper(array('form', 'url'));
-		$this->load->library('form_validation');
-		
+		// Initialisation du formulaire
+		$this->init_form();
+		// Cas particuliers
 		$this->form_validation->set_rules('login', 			$this->lang->line('users_libelle_login'), 			'required|alpha_dash|callback_login_unique');
-		$this->form_validation->set_rules('password', 		$this->lang->line('users_libelle_password'), 		'required|alpha_dash');
-		$this->form_validation->set_rules('nom', 			$this->lang->line('users_libelle_nom'), 			'required');
-		$this->form_validation->set_rules('date_naissance',	$this->lang->line('users_libelle_date_naissance'), 	'callback_date_check');
-		$this->form_validation->set_rules('adresse', 		$this->lang->line('users_libelle_adresse'), 		'required');
-		$this->form_validation->set_rules('cp', 			$this->lang->line('users_libelle_cp'), 				'required|numeric|exact_length[5]');
-		$this->form_validation->set_rules('ville', 			$this->lang->line('users_libelle_ville'), 			'required');
-		$this->form_validation->set_rules('pays', 			$this->lang->line('users_libelle_pays'), 			'required');
-		$this->form_validation->set_rules('tel', 			$this->lang->line('users_libelle_tel'), 			'required');
 		$this->form_validation->set_rules('email', 			$this->lang->line('users_libelle_email'), 			'required|valid_email|callback_email_unique');
-
+		
 		if ($this->form_validation->run() == FALSE)
 		{
 			$this->load->library('table');
@@ -157,30 +168,7 @@ class Users extends CI_Controller
 		}
 		else
 		{
-			$date_naissance = $this->input->post('date_naissance', TRUE);
-			if(!empty($date_naissance))
-				$date_naissance = implode('-', array_reverse(explode('-', $date_naissance)));
-			else
-				$date_naissance = NULL;
-			
-			$data = array(
-				'actif' 			=> $this->input->post('actif', TRUE),
-				'civ' 				=> $this->input->post('civ', TRUE),
-				'login' 			=> $this->input->post('login', TRUE),
-				'password' 			=> $this->input->post('password', TRUE),
-				'statut' 			=> $this->input->post('statut', TRUE),
-				'nom' 				=> strtoupper($this->input->post('nom', TRUE)),
-				'prenom' 			=> ucwords($this->input->post('prenom', TRUE)),
-				'date_naissance' 	=> $date_naissance,
-				'adresse' 			=> $this->input->post('adresse', TRUE),
-				'adresse2' 			=> $this->input->post('adresse2', TRUE),
-				'cp' 				=> $this->input->post('cp', TRUE),
-				'ville' 			=> ucwords($this->input->post('ville', TRUE)),
-				'pays' 				=> strtoupper($this->input->post('pays', TRUE)),
-				'tel' 				=> $this->input->post('tel', TRUE),
-				'tel2' 				=> $this->input->post('tel2', TRUE),
-				'email' 			=> $this->input->post('email', TRUE),
-			);
+			$data = $this->recup_form();
 			$this->users_model->modifier_user($data, $id);
 			redirect('/users/liste/users_message_modifier');
 		}

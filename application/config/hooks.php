@@ -10,9 +10,16 @@
 |
 */
 
-$hook['post_controller_constructor'] = array(
+$hook['post_controller_constructor'][] = array(
 	'class'    => 'Hooks_post_controller_constructor',
 	'function' => 'navigateur_check',
+	'filename' => 'hooks_post_controller_constructor.php',
+	'filepath' => 'hooks',
+);
+
+$hook['post_controller_constructor'][] = array(
+	'class'    => 'Hooks_post_controller_constructor',
+	'function' => 'start',
 	'filename' => 'hooks_post_controller_constructor.php',
 	'filepath' => 'hooks',
 );
