@@ -1,0 +1,198 @@
+
+#titre_site{
+	background-color : #000;
+	padding : 0.1em 0 0.1em 2em;
+	padding : 0.1rem 0 0.1rem 2rem;
+}
+#titre_site h1{
+	color : #ddd;
+	font-weight : normal;
+	font-size : 1.3em;
+	font-size : 1.3rem;
+}
+.breadcrumb{
+	padding-left : 2em;
+	padding-left : 2rem;
+	margin-bottom : 0;
+}
+#infos{
+	color : #999;
+	padding : 0.4em 1em 0.4em 0.4em;
+	padding : 0.4rem 1rem 0.4rem 0.4rem;
+	border-bottom : 1px solid #ddd;
+	font-size : 0.85em;
+	font-size : 0.7rem;
+}
+
+.container-fluid{
+	margin-top : 1em;
+	margin-top : 1rem;
+}
+
+#logo{
+	text-align : center;
+	padding : 1em;
+	padding : 1rem;
+	background-color : #fff;
+	border : 1px solid #eee;
+}
+
+#menu{
+	margin-top : 2em;
+	margin-top : 2rem;
+}
+
+.action_globale{
+	margin-bottom : 2em;
+	margin-bottom : 2rem;
+}
+
+.triable a:hover{
+	text-decoration:none;
+}
+
+.alert-error p{
+	font-weight : bold;
+}
+
+td.action{
+	text-align : center;
+}
+
+.filtres .action{
+	margin-left : 0.5em;
+	margin-left : 0.5rem;
+}
+
+.filtres h6{
+	margin-top : 0.6em;
+	margin-top : 0.5rem;
+	margin-right : 0.3em;
+	margin-right : 0.3rem;
+}
+
+#liste_fonctions, #liste_users{
+	max-width : 60em;
+	max-width : 60rem;
+}
+
+#liste_fonctions td, #liste_users td{
+	color : #999;
+}
+
+#liste_fonctions td.active, #liste_users td.active{
+	color : #000;
+}
+
+#form_user .control-group, #form_contact .control-group{
+	margin-bottom : 0.4em; 
+	margin-bottom : 0.5rem; 
+}
+
+.form-horizontal fieldset{
+	border : 1px solid #3a87ad;
+	margin-bottom : 1em;
+	margin-bottom : 1rem;
+	padding : 0 1em 1em 1em;
+	padding : 0 1rem 1rem 1rem;
+}
+
+#fiche_contact fieldset{
+	border : 1px solid #3a87ad;
+	margin-bottom : 1em;
+	margin-bottom : 1rem;
+	padding : 1em 1em 0.5em 1em;
+	padding : 1rem 1rem 0.5rem 1rem;
+}
+
+#fiche_contact fieldset table{
+	margin : 0;
+}
+#fiche_contact fieldset table td:first-child{
+	width : 10em;
+	width : 10rem;	
+}
+
+.form-horizontal fieldset legend h3{
+	color : #08c;
+	font-size : 0.8em;
+	font-size : 1rem;
+	font-weight : normal;
+	padding-left : 0.5em;
+	padding-left : 0.5rem;
+}
+
+#fiche_contact fieldset legend h3{
+	color : #08c;
+	font-size : 0.8em;
+	font-size : 1rem;
+	font-weight : normal;
+	padding-left : 0.5em;
+	padding-left : 0.5rem;
+}
+
+.form-horizontal fieldset legend{
+	margin-bottom : 0;
+}
+
+#form_connexion input{
+	margin-right : 0.5em;
+	margin-right : 0.5rem;
+}
+
+#form_connexion .alert-error p{
+	margin : 0;
+}
+
+#form_contact_filtre{
+	margin : 0;
+}
+
+#titre_action{
+	font-weight : normal;
+	color : #555;
+	margin-bottom : 0.5em;
+	margin-bottom : 0.5rem;
+}
+
+td.action{
+	padding : 0;
+}
+
+td.action a{
+	display : block;
+	padding : 0.5em;
+	padding : 0.5rem;
+	background-color : #F1F8FC;
+}
+
+td.action a:hover{
+	background-color : #E0F0F8;
+	text-decoration : none;
+}
+
+.requis{
+	color : #999;
+}
+
+.clear{
+	clear:both;
+}
+
+.modal{
+	display : none;
+}
+
+#lien_photo{
+	display: block;
+	margin-right : 0.5em;
+	margin-right : 0.5rem;
+}
+
+.breadcrumb li {
+	display: inline; /* BUG IE7 */
+}
+
+.error{
+	color: #B94A48;
+}

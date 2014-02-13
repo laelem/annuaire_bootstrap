@@ -15,9 +15,6 @@ class Accueil extends CI_Controller
         
         // Chargement du thème
 		$this->load->library('layout');
-        
-        // Ajout d'une feuille de style
-        $this->layout->ajouter_css('style_general');
 	}
 	
 	public function index()

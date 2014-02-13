@@ -15,9 +15,6 @@ class Annuaire extends CI_Controller
         
         // Chargement du thème
 		$this->load->library('layout');
-        
-        // Ajout d'une feuille de style
-        $this->layout->ajouter_css('style_general');
 		
 		// Chargement du modèle
         $this->load->model('annuaire_model');
@@ -36,13 +33,9 @@ class Annuaire extends CI_Controller
 
 	public function liste($page = 1, $message = '')
 	{		
-		// chargement des librairires
+		// chargement des librairies
 		$this->load->helper(array('form', 'url'));
 		$this->load->library('table');
-		
-		// Ajout d'un script js pour des colonnes redimensionnables
-        $this->layout->ajouter_js('colResizable/colResizable-1.3.source.min');
-        $this->layout->ajouter_js('colResizable/start');
 		
 		$data['message'] = $message;
 		
@@ -54,15 +47,25 @@ class Annuaire extends CI_Controller
 			'base_url' 			=> base_url().'annuaire/liste',
 			'first_url' 		=> base_url().'annuaire/liste/1',
 			'total_rows' 		=> $this->annuaire_model->get_nb_contact($sess_annuaire['filtre']),
-			'per_page' 			=> 2,
+			'per_page' 			=> 4,
 			'num_links' 		=> 2,
 			'use_page_numbers' 	=> TRUE,
-			'full_tag_open' 	=> '<p class="pagination">',
-			'full_tag_close' 	=> '</p>',
+			'full_tag_open' 	=> '<div class="pagination"><ul>',
+			'full_tag_close' 	=> '</ul></div>',
 			'first_link' 		=> '&lt;&lt;',
+			'first_tag_open' 	=> '<li>',
+			'first_tag_close' 	=> '</li>',
 			'last_link' 		=> '&gt;&gt;',
-			'cur_tag_open' 		=> '<span>',
-			'cur_tag_close' 	=> '</span>',
+			'last_tag_open' 	=> '<li>',
+			'last_tag_close' 	=> '</li>',
+			'next_tag_open' 	=> '<li>',
+			'next_tag_close' 	=> '</li>',
+			'prev_tag_open' 	=> '<li>',
+			'prev_tag_close' 	=> '</li>',
+			'cur_tag_open' 		=> '<li class="active"><a href="#">',
+			'cur_tag_close' 	=> '</a></li>',
+			'num_tag_open' 		=> '<li>',
+			'num_tag_close' 	=> '</li>',
 		);
 		$this->pagination->initialize($config_page); 
 		$data['pagination'] = $this->pagination->create_links();
@@ -97,13 +100,17 @@ class Annuaire extends CI_Controller
 			);
 		}
 		
-		if(empty($data_session['annuaire']) || empty($data_session['annuaire']['filtre']))
+		if(empty($data_session['annuaire']) || empty($data_session['annuaire']['filtre'])){
 			$data_session['annuaire']['filtre'] = array(
-				'champ' 	=> 'nom',
-				'recherche' => '',
-				'like'		=> 'none',
+				'recherche_val' 	=> '',
+				'recherche_type' 	=> '',
+				'recherche_del' 	=> '',
+				'lettre_val' 		=> '',
+				'lettre_del' 		=> '',
+				'like'				=> '',
 			);
-			
+		}
+		
 		// si une page est demandée
 		if(!empty($page)){
 			if(intval($page) == 0)
@@ -129,7 +136,7 @@ class Annuaire extends CI_Controller
 		// mise à jour
 		$data_session['annuaire']['tri'] = array(
 			'champ' => $champ,
-			'type'	=> $sess_annuaire['tri']['champ'] != $champ ? 'asc' : ($sess_annuaire['tri']['type'] == 'asc' ? 'desc' : 'asc'),
+			'type'	=> $data_session['annuaire']['tri']['champ'] != $champ ? 'asc' : ($data_session['annuaire']['tri']['type'] == 'asc' ? 'desc' : 'asc'),
 		);
 		$this->session->set_userdata($data_session);
 		
@@ -137,55 +144,25 @@ class Annuaire extends CI_Controller
 		redirect('/annuaire/liste/'.$data_session['annuaire']['page']);
 	}
 	
-	public function filtre($lettre = '')
+	public function filtre()
 	{
 		// on récupère les données annuaire en session pour les modifier
 		$data_session['annuaire'] = $this->session->userdata('annuaire');
 		
-		if(!empty($lettre)){
-		
-			// mise à jour
-			$data_session['annuaire']['filtre'] = array(
-				'champ' => 'nom',
-				'recherche'	=> $lettre,
-				'like' => 'after',
-			);
-		}
-		else{
-		
-			// Récupération des filtres postés
-			$input_nom_prenom = $this->input->post('input_nom_prenom', TRUE);
-			$radio_nom_prenom = $this->input->post('radio_nom_prenom', TRUE);
-			
-			// mise à jour
-			$data_session['annuaire']['filtre'] = array(
-				'champ' => $radio_nom_prenom,
-				'recherche'	=> $input_nom_prenom,
-				'like' => 'both',
-			);
-		}
+		// Mise en session des filtres postés
+		$data_session['annuaire']['filtre'] = array(
+			'recherche_val' 	=> $this->input->post('filtre_recherche_val', TRUE),
+			'recherche_type' 	=> $this->input->post('filtre_recherche_type', TRUE),
+			'recherche_del' 	=> $this->input->post('filtre_recherche_del', TRUE),
+			'lettre_val' 		=> $this->input->post('filtre_lettre_val', TRUE),
+			'lettre_del' 		=> $this->input->post('filtre_lettre_del', TRUE),
+		);
+		$data_session['annuaire']['filtre']['like'] = !empty($data_session['annuaire']['filtre']['recherche_val']) ? 'both' : (!empty($data_session['annuaire']['filtre']['lettre_val']) ? 'after' : 'none');
 		
 		$this->session->set_userdata($data_session);
-		
+
 		// redirection vers la liste
 		redirect('/annuaire/liste');
-	}
-	
-	public function reset_filtre()
-	{	
-		// on récupère les données annuaire en session pour les modifier
-		$data_session['annuaire'] = $this->session->userdata('annuaire');
-		
-		// mise à jour
-		$data_session['annuaire']['filtre'] = array(
-			'champ' => 'nom',
-			'recherche'	=> '',
-			'like' => 'none',
-		);
-		$this->session->set_userdata($data_session);
-		
-		// redirection vers la liste
-		redirect('/annuaire/liste/'.$data_session['annuaire']['page']);
 	}
 	
 	protected function init_form()
@@ -193,11 +170,6 @@ class Annuaire extends CI_Controller
 		// chargement des librairies
 		$this->load->helper(array('form', 'url'));
 		$this->load->library('form_validation');
-		$this->layout->ajouter_js('design_check_radio/design_check_radio.min');
-		$this->layout->ajouter_css('design_check_radio/style');
-		$this->layout->ajouter_js('chosen/chosen/chosen.jquery.min');
-		$this->layout->ajouter_js('chosen/start');
-		$this->layout->ajouter_css('chosen/chosen/chosen');
 		
 		// règles de validation
 		$this->form_validation->set_rules('nom', 			$this->lang->line('annuaire_libelle_nom'), 			'required');
@@ -217,19 +189,6 @@ class Annuaire extends CI_Controller
 		);
 		$this->load->library('upload');
 		$this->upload->initialize($config_upload_image);
-		
-		// Récupération de la liste des pays via un fichier xml
-		$pays_xml = simplexml_load_file(APPPATH.'data/pays.xml');
-		$tab_pays = array(0 => '');
-		$i = 0;
-		while($pays_xml->country[$i]){
-			$tab_pays[] = $pays_xml->country[$i]->name_country_uppercase;
-			++$i;
-		}
-		setlocale(LC_ALL, "fr_FR.UTF-8");
-		sort($tab_pays, SORT_LOCALE_STRING);
-		
-		return $tab_pays;
 	}
 	
 	protected function recup_form()
@@ -262,7 +221,7 @@ class Annuaire extends CI_Controller
 	public function ajouter()
 	{	
 		// Initialisation du formulaire
-		$tab_pays = $this->init_form();
+		$this->init_form();
 		
 		// si on arrive sur le formulaire
 		// ou si il y a des erreurs générales 
@@ -295,7 +254,7 @@ class Annuaire extends CI_Controller
 				'com'				=> '',
 			);
 			
-			$data['tab_pays'] = $tab_pays;
+			$data['tab_pays'] = liste_pays();
 			$data['fonctions'] = $this->fonctions_model->get_fonctions_actives();
 			$data['erreur_upload_photo'] = $this->upload->display_errors();
 			$data['lien_photo'] = '';
@@ -329,7 +288,6 @@ class Annuaire extends CI_Controller
 			}
 			
 			$data = $this->recup_form();
-			$data['tab_pays'] = $tab_pays;
 			$data['data_contact']['photo'] = $data_photo['file_name'];
 			
 			// traitement
@@ -345,7 +303,7 @@ class Annuaire extends CI_Controller
 	public function modifier($id)
 	{
 		// Initialisation du formulaire
-		$tab_pays = $this->init_form();
+		$this->init_form();
 
 		// si on arrive sur le formulaire
 		// ou si il y a des erreurs générales 
@@ -360,13 +318,15 @@ class Annuaire extends CI_Controller
 			$data['contact'] = $this->annuaire_model->get_contact($id);
 			$data['contact']['fonctions'] = $this->fonctions_model->get_fonctions_contact($id);
 			$data['fonctions'] = $this->fonctions_model->get_fonctions_actives();
-			$data['tab_pays'] = $tab_pays;
+			$data['tab_pays'] = liste_pays();
 			
 			// gestion de l'affichage de l'upload
 			$data['erreur_upload_photo'] = $this->upload->display_errors();
 			if(!empty($data['contact']['photo'])){
-				$data['lien_photo'] = '<a href="'.base_url().'upload/user_photo/'.$data['contact']['photo'].'" target="_blank" ><img src="'.base_url().'upload/user_photo/thumbs/'.$data['contact']['photo'].'" /></a><br />';
-				$data['btn_suppr_photo'] = '<button type="button" onclick="window.location.href=\''.site_url('/annuaire/supprimer_photo/'.$id).'\'" >'.$this->lang->line('general_supprimer').'</button><br />';
+				$this->layout->ajouter_css('colorbox/colorbox');
+				$this->layout->ajouter_js('colorbox/jquery.colorbox-min');
+				$data['lien_photo'] = '<a href="'.base_url().'upload/user_photo/'.$data['contact']['photo'].'" title="Photo" id="lien_photo" class="colorbox pull-left"><img src="'.base_url().'upload/user_photo/thumbs/'.$data['contact']['photo'].'" alt="Photo" /></a>';
+				$data['btn_suppr_photo'] = ' <button class="btn" type="button" onclick="window.location.href=\''.site_url('/annuaire/supprimer_photo/'.$id).'\'" >'.$this->lang->line('general_supprimer').'</button><div class="clear"></div>';
 			}
 			else{
 				$data['lien_photo'] = '';
@@ -409,7 +369,6 @@ class Annuaire extends CI_Controller
 
 			$data = $this->recup_form();
 			$data['data_contact']['photo'] = $data_photo['file_name'];
-			$data['tab_pays'] = $tab_pays;
 			
 			// traitement
 			$this->annuaire_model->supprimer_fonctions_contact($id);
@@ -430,12 +389,15 @@ class Annuaire extends CI_Controller
 		
 		// récupération des valeurs
 		$data['contact'] = $this->annuaire_model->get_contact($id);
-		if(!empty($data['contact']['photo']))
-			$data['lien_photo'] = '<a href="'.base_url().'upload/user_photo/'.$data['contact']['photo'].'" target="_blank" ><img src="'.base_url().'upload/user_photo/thumbs/'.$data['contact']['photo'].'" /></a><br />';
-		else
+		if(!empty($data['contact']['photo'])){
+			$this->layout->ajouter_css('colorbox/colorbox');
+			$this->layout->ajouter_js('colorbox/jquery.colorbox-min');
+			$data['lien_photo'] = '<a href="'.base_url().'upload/user_photo/'.$data['contact']['photo'].'" title="Photo" id="lien_photo" class="colorbox pull-left"><img src="'.base_url().'upload/user_photo/thumbs/'.$data['contact']['photo'].'" alt="Photo" /></a>';
+		}else
 			$data['lien_photo'] = 'Aucune photo';
 		$data['contact']['fonctions'] = $this->fonctions_model->get_fonctions_contact($id, 'affichage');
 		$data['fonctions'] = $this->fonctions_model->get_fonctions_actives();
+		$data['tab_pays'] = liste_pays();
 		
 		// affichage de la vue
 		$this->layout->view('annuaire/contact', $data);
@@ -457,6 +419,9 @@ class Annuaire extends CI_Controller
 	
 	public function supprimer($id)
 	{		
+		$nom_fichier = $this->annuaire_model->get_photo($id);
+		unlink('./upload/user_photo/'.$nom_fichier);
+		unlink('./upload/user_photo/thumbs/'.$nom_fichier);
 		$this->annuaire_model->supprimer_contact($id);
 		$sess_annuaire = $this->session->userdata('annuaire');
 		redirect('/annuaire/liste/'.$sess_annuaire['page'].'/annuaire_message_supprimer');

@@ -1,1 +1,0 @@
-$(function(){	$( ".liste" ).resizable({ // par jquery-ui		containment: 'parent' 	}); 	var onSampleResized = function(e){  		var table = $(e.currentTarget); //reference to the resized table	};    	$(".liste").colResizable({		liveDrag:true,		gripInnerHtml:"<div class='grip'></div>", 		draggingClass:"dragging", 		onResize:onSampleResized,		postbackSafe:true	});});

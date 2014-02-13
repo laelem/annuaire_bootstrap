@@ -1,1 +1,1 @@
-<?phpecho 'Bienvenue sur l\'annuaire.';
+<?phpecho '<h2>'.$this->lang->line('global_intro_accueil').'</h2>';

@@ -15,9 +15,6 @@ class Users extends CI_Controller
         
         // Chargement du thème
 		$this->load->library('layout');
-        
-        // Ajout d'une feuille de style
-        $this->layout->ajouter_css('style_general');
 		
 		// Chargement du modèle
         $this->load->model('users_model');
@@ -29,11 +26,7 @@ class Users extends CI_Controller
 	}
 
 	public function liste($message = '')
-	{
-		// Ajout d'un script js pour des colonnes redimensionnables
-        $this->layout->ajouter_js('colResizable/colResizable-1.3.source.min');
-        $this->layout->ajouter_js('colResizable/start');
-		
+	{	
 		$sess_user = $this->session->userdata('user');
 		if(empty($sess_user) || empty($sess_user['tri'])){
 			$sess_user['tri'] = array(
@@ -66,9 +59,8 @@ class Users extends CI_Controller
 	{
 		$this->load->helper(array('form', 'url'));
 		$this->load->library('form_validation');
-		$this->layout->ajouter_js('design_check_radio/design_check_radio.min');
-		$this->layout->ajouter_css('design_check_radio/style');
 		
+		$this->form_validation->set_error_delimiters('<span class="help-inline">', '</span>');
 		$this->form_validation->set_rules('password', 		$this->lang->line('users_libelle_password'), 		'required|alpha_dash');
 		$this->form_validation->set_rules('nom', 			$this->lang->line('users_libelle_nom'), 			'required');
 		$this->form_validation->set_rules('date_naissance',	$this->lang->line('users_libelle_date_naissance'), 	'callback_date_check');
@@ -112,6 +104,7 @@ class Users extends CI_Controller
 	{	
 		// Initialisation du formulaire
 		$this->init_form();
+		
 		// Cas particuliers
 		$this->form_validation->set_rules('login', 			$this->lang->line('users_libelle_login'), 			'required|alpha_dash|is_unique[user.login]');
 		$this->form_validation->set_rules('email', 			$this->lang->line('users_libelle_email'), 			'required|valid_email|is_unique[user.email]');
@@ -137,6 +130,7 @@ class Users extends CI_Controller
 				'tel2'				=> '',
 				'email'				=> '',
 			);
+			$data['tab_pays'] = liste_pays();
 			$this->layout->view('users/form', $data);
 		}
 		else
@@ -151,6 +145,7 @@ class Users extends CI_Controller
 	{
 		// Initialisation du formulaire
 		$this->init_form();
+		
 		// Cas particuliers
 		$this->form_validation->set_rules('login', 			$this->lang->line('users_libelle_login'), 			'required|alpha_dash|callback_login_unique');
 		$this->form_validation->set_rules('email', 			$this->lang->line('users_libelle_email'), 			'required|valid_email|callback_email_unique');
@@ -164,6 +159,7 @@ class Users extends CI_Controller
 				$data['user']['date_naissance'] = implode('-', array_reverse(explode('-', $date_naissance)));
 			else
 				$data['user']['date_naissance'] = '';
+			$data['tab_pays'] = liste_pays();
 			$this->layout->view('users/form', $data);
 		}
 		else

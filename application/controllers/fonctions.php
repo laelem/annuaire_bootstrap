@@ -15,9 +15,6 @@ class Fonctions extends CI_Controller
         
         // Chargement du thème
 		$this->load->library('layout');
-        
-        // Ajout d'une feuille de style
-        $this->layout->ajouter_css('style_general');
 		
 		// Chargement du modèle
         $this->load->model('fonctions_model');
@@ -31,8 +28,8 @@ class Fonctions extends CI_Controller
 	public function liste($message = '')
 	{
 		// Ajout d'un script js pour des colonnes redimensionnables
-        $this->layout->ajouter_js('colResizable/colResizable-1.3.source.min');
-        $this->layout->ajouter_js('colResizable/start');
+        // $this->layout->ajouter_js('colResizable/colResizable-1.3.source.min');
+        // $this->layout->ajouter_js('colResizable/start');
 		
 		$sess_fonction = $this->session->userdata('fonction');
 		if(empty($sess_fonction) || empty($sess_fonction['tri'])){
@@ -66,9 +63,8 @@ class Fonctions extends CI_Controller
 	{
 		$this->load->helper(array('form', 'url'));
 		$this->load->library('form_validation');
-		$this->layout->ajouter_js('design_check_radio/design_check_radio.min');
-		$this->layout->ajouter_css('design_check_radio/style');
 		
+		$this->form_validation->set_error_delimiters('<span class="help-inline">', '</span>');
 		$this->form_validation->set_rules('actif', $this->lang->line('fonctions_libelle_actif'), 'required');
 		$this->form_validation->set_rules('nom', $this->lang->line('fonctions_libelle_nom'), 'required');
 	}
@@ -82,7 +78,7 @@ class Fonctions extends CI_Controller
 		{
 			$this->load->library('table');
 			$data['fonction'] = array(
-				'actif' => 0,
+				'actif' => 1,
 				'nom'	=> '',
 			);
 			$this->layout->view('fonctions/form', $data);

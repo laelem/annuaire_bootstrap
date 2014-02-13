@@ -58,9 +58,11 @@ class Annuaire_model extends CI_Model
 		$this->db->order_by($tri['champ'], $tri['type']); 
 		
 		if(!$inactif)
-			$query = $this->db->where('actif', '1');
-			
-		$query = $this->db->like($filtre['champ'], $filtre['recherche'], $filtre['like']);
+			$this->db->where('actif', '1');
+		if(!empty($filtre['recherche_val']))
+			$this->db->like($filtre['recherche_type'], $filtre['recherche_val'], $filtre['like']);
+		if(!empty($filtre['lettre_val']))
+			$this->db->like('nom', $filtre['lettre_val'], $filtre['like']);
 		$query = $this->db->get($this->table, $nb, $offset);
 
 		$liste_contact = array();
@@ -74,8 +76,10 @@ class Annuaire_model extends CI_Model
 	
 	public function get_nb_contact($filtre)
     {
-		if(!empty($filtre['recherche']))
-			$this->db->like($filtre['champ'], $filtre['recherche'], $filtre['like']);
+		if(!empty($filtre['recherche_val']))
+			$this->db->like($filtre['recherche_type'], $filtre['recherche_val'], $filtre['like']);
+		elseif(!empty($filtre['lettre_val']))
+			$this->db->like('nom', $filtre['lettre_val'], $filtre['like']);
 		$this->db->from($this->table);
 		return $this->db->count_all_results();
     }

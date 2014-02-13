@@ -16,9 +16,6 @@ class Connexion extends CI_Controller
         // Chargement du thème
 		$this->load->library('layout');
         
-        // Ajout d'une feuille de style
-        $this->layout->ajouter_css('style_general');
-        
 		// Chargement du helper et de la librairie pour les formulaires
         $this->load->helper('form');
         $this->load->library('form_validation');
